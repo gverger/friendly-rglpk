@@ -16,11 +16,11 @@ end
 begin
   require 'jeweler'
   Jeweler::Tasks.new do |gemspec|
-    gemspec.name = "rglpk"
+    gemspec.name = "heroku-rglpk"
     gemspec.summary = paragraphs_of("README.md", 1)
     gemspec.description = paragraphs_of("README.md", 1..3)
-    gemspec.homepage = "http://rglpk.rubyforge.org/"
-    gemspec.rubyforge_project = "rglpk"
+    # gemspec.homepage = "http://rglpk.rubyforge.org/"
+    # gemspec.rubyforge_project = "rglpk"
     
     gemspec.authors = ["Alex Gutteridge", "William Taysom"]
     gemspec.email = ["alexg@kuicr.kyoto-u.ac.jp", "wtaysom@gmail.com"]
