@@ -19,7 +19,10 @@ def install_glpk
 end
 
 unless RUBY_PLATFORM =~ /x86_64-linux/
-  install_glpk
+
+  if not have_library("glpk")
+    install_glpk
+  end
 end
 
 
