@@ -24,7 +24,6 @@ Gem::Specification.new do |s|
     "Rakefile",
     "VERSION",
     "ext/extconf.rb",
-    "ext/glpk-4.44.tar.gz",
     "ext/glpk_install/bin/glpsol",
     "ext/glpk_install/include/glpk.h",
     "ext/glpk_install/lib/libglpk.a",
