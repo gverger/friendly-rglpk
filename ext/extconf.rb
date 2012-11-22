@@ -15,7 +15,7 @@ def install_glpk
   end
 end
 
-install_glpk
+#install_glpk
 dir_config('glpk')
 find_library("glpk", nil, "#{GLPK_INSTALL}/lib")
 find_header("glpk.h", "#{GLPK_INSTALL}/include")
