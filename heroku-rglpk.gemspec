@@ -24,6 +24,7 @@ Gem::Specification.new do |s|
     "Rakefile",
     "VERSION",
     "ext/extconf.rb",
+    "ext/glpk-4.44.tar.gz",
     "ext/glpk_wrapper.c",
     "heroku-rglpk.gemspec",
     "lib/rglpk.rb",
