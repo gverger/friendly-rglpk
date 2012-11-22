@@ -38,4 +38,4 @@ dlopen=''
 dlpreopen=''
 
 # Directory that this library needs to be installed in:
-libdir='/app/lib/glpk/lib'
+libdir='/home/ubuntu/heroku-rglpk/ext/glpk/lib'
