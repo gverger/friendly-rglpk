@@ -44,7 +44,7 @@ Gem::Specification.new do |s|
     "test/test_brief_example.rb",
     "test/test_problem_kind.rb"
   ]
-  s.require_paths = ["lib", "ext", "ext"]
+  s.require_paths = ["lib", "ext", "ext/glpk_install/lib", "ext", "ext/glpk_install/lib"]
   s.rubygems_version = "1.8.10"
   s.summary = "Rglpk is a package providing a Ruby wrapper to the [GNU GLPK](http://www.gnu.org/software/glpk/) library.  The GLPK (GNU Linear Programming Kit) package is intended for solving large-scale linear programming (LP), mixed integer programming (MIP), and other related problems."
 
