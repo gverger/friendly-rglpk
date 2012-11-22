@@ -8,7 +8,7 @@ TARBALL_PATH = "#{ROOT_DIR}/#{PROG_NAME}.tar.gz"
 GLPK_DIR = "#{ROOT_DIR}/glpk-4.44"
 GLPK_INSTALL = "#{ROOT_DIR}/glpk_install"
 def install_glpk
-#  system "curl -o #{TARBALL_PATH} http://ftp.gnu.org/gnu/glpk/glpk-4.44.tar.gz"
+  system "curl -o #{TARBALL_PATH} http://ftp.gnu.org/gnu/glpk/glpk-4.44.tar.gz"
   Dir.chdir ROOT_DIR
   system "tar -xzf #{TARBALL_PATH}"
   res = system "cd #{GLPK_DIR} && ./configure --prefix=#{GLPK_INSTALL} && make && make install"
