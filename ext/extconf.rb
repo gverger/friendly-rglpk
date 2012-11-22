@@ -25,7 +25,6 @@ GLPK_DIR = "#{ROOT_DIR}/glpk"
 
 # install_glpk
 dir_config('glpk')
-require 'debugger'; debugger
 find_library("glpk", nil, "#{GLPK_DIR}/lib")
 find_header("glpk.h", "#{GLPK_DIR}/include")
 
