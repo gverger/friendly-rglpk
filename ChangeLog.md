@@ -1,3 +1,24 @@
+# rglpk 0.2.6 2012-01-23
+
+* Fix memory leaks by adding finalizer to free GLPK problems.
+
+# rglpk 0.2.5 2011-06-23
+
+* Add Row#get_stat, Row#get_prim Row#get_dual.
+* Update tests to work with Ruby 1.9.2.
+
+# rglpk 0.2.4 2010-11-04
+
+* Add Rglpk#mip_status.
+
+# rglpk 0.2.3 2010-11-03
+
+* Allow range access of rows and columns.
+
+# rglpk 0.2.2 2010-10-25
+
+* Exclude RDoc generation since we don't yet have any.
+
 # rglpk 0.2.1 2010-10-13
 
 * Point readers to github in README.

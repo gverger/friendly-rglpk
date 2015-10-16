@@ -1,6 +1,6 @@
 require File.expand_path('helper', File.dirname(__FILE__))
 
-class TestRglpk < Test::Unit::TestCase
+class TestRglpk < Minitest::Test
 
   def test_create
     assert_instance_of Rglpk::Problem, Rglpk::Problem.new
@@ -24,7 +24,18 @@ class TestRglpk < Test::Unit::TestCase
     assert_equal Rglpk::GLP_MIN, p.obj.dir
     p.obj.dir = Rglpk::GLP_MAX
     assert_equal Rglpk::GLP_MAX, p.obj.dir
-    assert_raise(ArgumentError){p.obj.dir = 3}
+    assert_raises(ArgumentError){p.obj.dir = 3}
+  end
+
+  def test_add_row
+    p = Rglpk::Problem.new
+    r = p.add_row
+    assert_kind_of Rglpk::Row, r
+    assert_equal 1, r.i
+    assert_equal 1, p.rows.size
+    r = p.add_row
+    assert_equal 2, r.i
+    assert_equal 2, p.rows.size
   end
 
   def test_add_rows
@@ -33,6 +44,17 @@ class TestRglpk < Test::Unit::TestCase
     assert_equal 2, p.rows.size
     p.add_rows(2)
     assert_equal 4, p.rows.size
+  end
+
+  def test_add_column
+    p = Rglpk::Problem.new
+    c = p.add_col
+    assert_kind_of Rglpk::Column, c
+    assert_equal 1, c.j
+    assert_equal 1, p.cols.size
+    c = p.add_col
+    assert_equal 2, c.j
+    assert_equal 2, p.cols.size
   end
 
   def test_add_cols
@@ -85,7 +107,7 @@ class TestRglpk < Test::Unit::TestCase
   def test_set_row
     p = Rglpk::Problem.new
     p.add_rows(2)
-    assert_raise(RuntimeError){p.rows[1].set([1, 2])}
+    assert_raises(RuntimeError){p.rows[1].set([1, 2])}
     p.add_cols(2)
     p.rows[1].set([1, 2])
     assert_equal [1, 2], p.rows[1].get
@@ -94,7 +116,7 @@ class TestRglpk < Test::Unit::TestCase
   def test_set_col
     p = Rglpk::Problem.new
     p.add_cols(2)
-    assert_raise(RuntimeError){p.cols[1].set([1, 2])}
+    assert_raises(RuntimeError){p.cols[1].set([1, 2])}
     p.add_rows(2)
     p.cols[1].set([1, 2])
     assert_equal [1, 2], p.cols[1].get
@@ -151,6 +173,12 @@ class TestRglpk < Test::Unit::TestCase
     p.rows[0].name = 'test'
     assert_equal [1, 2], p.rows['test'].get
   end
+  
+  def test_get_row_range
+    p = Rglpk::Problem.new
+    p.add_rows(5)
+    assert_equal 2, p.rows[3..-1].size
+  end
 
   def test_col_get_by_name
     p = Rglpk::Problem.new
@@ -170,6 +198,18 @@ class TestRglpk < Test::Unit::TestCase
     p.add_rows(2)
     p.set_matrix([1, 2, 3, 4])
     p.simplex({:msg_lev => 1})
+  end
+
+  def test_sparse_row
+    p = Rglpk::Problem.new
+    p.add_cols(7)
+    rows = p.add_rows(3)
+    rows[0].set [1], [5]
+    rows[1].set [3, 6], [6, 7]
+    rows[2].set [1, 2, 3], [4, 5, 7]
+    assert_equal [0, 0, 0, 0, 1, 0, 0], rows[0].get
+    assert_equal [0, 0, 0, 0, 0, 3, 6], rows[1].get
+    assert_equal [0, 0, 0, 1, 2, 0, 3], rows[2].get
   end
 
   class D < Rglpk::Problem

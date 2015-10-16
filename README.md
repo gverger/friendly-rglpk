@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/wtaysom/rglpk.svg)](https://travis-ci.org/wtaysom/rglpk)
+
 # Introduction
 
 Rglpk is a package providing a Ruby wrapper to the [GNU GLPK](http://www.gnu.org/software/glpk/) library.  The GLPK (GNU Linear Programming Kit) package is intended for solving large-scale linear programming (LP), mixed integer programming (MIP), and other related problems.
@@ -12,10 +14,12 @@ A working GLPK library installation is required.  Currently, Rglpk is tested wit
 
 	> gzip -d glpk-X.Y.tar.gz
 	> tar -x < glpk-X.Y.tar
+	> cd glpk-X.Y
 	> ./configure
 	> make
 	> make check
 	> make install
+	> ldconfig # creates the necessary links and cache to the most recent shared libraries
 
 Rglpk is only available as a gem:
 
@@ -29,7 +33,7 @@ Rglpk provides two primary files: ext/glpk_wrapper.c which is a Swig generated w
 
 An example:
 
-  	# The same Brief Example as found in section 1.3 of 
+	# The same Brief Example as found in section 1.3 of 
 	# glpk-4.44/doc/glpk.pdf.
 	#
 	# maximize
@@ -79,6 +83,16 @@ An example:
 
 	printf("z = %g; x1 = %g; x2 = %g; x3 = %g\n", z, x1, x2, x3)
 	#=> z = 733.333; x1 = 33.3333; x2 = 66.6667; x3 = 0
+
+# Testing
+
+Test everything with:
+
+	> rake test
+
+Test a specific test with:
+
+	> ruby test/test_brief_example.rb # or what have you.
 
 # License
 

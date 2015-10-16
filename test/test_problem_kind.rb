@@ -30,21 +30,29 @@ module TestProblemKind
   def verify_results(*results)
     if column_kind == Rglpk::GLP_CV
       solution_method = :simplex
+      status_method = :status
       value_method = :get_prim
     else
       solution_method = :mip
+      status_method = :mip_status
       value_method = :mip_val
     end
     
     @p.send(solution_method, {:presolve => Rglpk::GLP_ON})
     
+    assert_equal Rglpk::GLP_OPT, @p.send(status_method)
+    
     @p.cols.each_with_index do |col, index|
       assert_equal results[index], col.send(value_method)
+    end
+
+    @p.rows.each do |row|
+      refute_nil row.send(value_method)
     end
   end
 end
 
-class BinaryVariables < Test::Unit::TestCase
+class BinaryVariables < Minitest::Test
   include TestProblemKind
   
   def column_kind
@@ -56,7 +64,7 @@ class BinaryVariables < Test::Unit::TestCase
   end
 end
 
-class IntegerVariables < Test::Unit::TestCase
+class IntegerVariables < Minitest::Test
   include TestProblemKind
   
   def column_kind
@@ -68,7 +76,7 @@ class IntegerVariables < Test::Unit::TestCase
   end
 end
 
-class ContinuousVariables < Test::Unit::TestCase
+class ContinuousVariables < Minitest::Test
   include TestProblemKind
   
   def column_kind

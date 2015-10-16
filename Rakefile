@@ -28,6 +28,7 @@ begin
     gemspec.extensions << 'ext/extconf.rb'
     gemspec.require_paths << 'ext'
     gemspec.require_paths << 'ext/glpk_install/lib'
+    gemspec.rdoc_options << "--exclude" << "."
   end
   Jeweler::GemcutterTasks.new
 rescue LoadError
@@ -69,3 +70,5 @@ desc "Run Test::Unit tests."
 task :test => :build_extension do
   system("ruby test/test_all.rb")
 end
+
+task :default => [:test]

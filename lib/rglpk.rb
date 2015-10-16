@@ -24,15 +24,13 @@ module Rglpk
     end
     
     def [](i)
-      if i.kind_of?(Numeric)
-        @array[i]
-      elsif i.kind_of?(String)
-        raise RuntimeError if self[1].nil?
+      if i.kind_of?(String)
+        raise RuntimeError, "no rows" if self[1].nil?
         idx = Glpk_wrapper.send(glp_find_method, self[1].p.lp, i)
-        raise ArgumentError if idx == 0
+        raise ArgumentError, "no row with name #{i.inspect}" if idx == 0
         @array[idx - 1]
       else
-        raise ArgumentError
+       @array[i]
       end
     end
     
@@ -70,7 +68,15 @@ module Rglpk
       @rows = RowArray.new
       @cols = ColArray.new
       Glpk_wrapper.glp_create_index(@lp)
-      @status = nil
+      
+      ObjectSpace.define_finalizer(self, self.class.finalizer(@lp))
+    end
+    
+    def self.finalizer(lp)
+      proc do
+        Glpk_wrapper.glp_delete_index(lp)
+        Glpk_wrapper.glp_delete_prob(lp)
+      end
     end
     
     def name=(n)
@@ -84,19 +90,39 @@ module Rglpk
     def nz
       Glpk_wrapper.glp_get_num_nz(@lp)
     end
-
+    
+    def add_row
+      Glpk_wrapper.glp_add_rows(@lp, 1)
+      new_row = Row.new(self, @rows.size + 1)
+      @rows.send(:push, new_row)
+      new_row
+    end
+    
     def add_rows(n)
       Glpk_wrapper.glp_add_rows(@lp, n)
       s = @rows.size
-      n.times{|i| @rows.send(:push, Row.new(self, s + i + 1))}
-      @rows
+      n.times.map do |i|
+        new_row = Row.new(self, s + i + 1)
+        @rows.send(:push, new_row)
+        new_row
+      end
+    end
+
+    def add_col
+      Glpk_wrapper.glp_add_cols(@lp, 1)
+      new_column = Column.new(self, @cols.size + 1)
+      @cols.send(:push, new_column)
+      new_column
     end
     
     def add_cols(n)
       Glpk_wrapper.glp_add_cols(@lp, n)
       s = @cols.size
-      n.times{|i| @cols.send(:push, Column.new(self, s + i + 1))}
-      @cols
+      n.times.map do |i|
+        new_col = Column.new(self, s + i + 1)
+        @cols.send(:push, new_col)
+        new_col
+      end
     end
         
     def del_rows(a)
@@ -106,6 +132,7 @@ module Rglpk
       r = Glpk_wrapper.new_intArray(a.size + 1)
       a.each_with_index{|n, i| Glpk_wrapper.intArray_setitem(r, i + 1, n)}
       Glpk_wrapper.glp_del_rows(@lp, a.size, r)
+      Glpk_wrapper.delete_intArray(r)
 
       a.each do |n|
         @rows.send(:delete_at, n)
@@ -118,12 +145,13 @@ module Rglpk
     end
 
     def del_cols(a)
-      # Ensure the array of rows tro delete is sorted and unique.
+      # Ensure the array of rows to delete is sorted and unique.
       a = a.sort.uniq
 
       r = Glpk_wrapper.new_intArray(a.size + 1)
       a.each_with_index{|n, i| Glpk_wrapper.intArray_setitem(r, i + 1, n)}
       Glpk_wrapper.glp_del_cols(@lp, a.size, r)
+      Glpk_wrapper.delete_intArray(r)
 
       a.each do |n|
         @cols.send(:delete_at, n)
@@ -152,6 +180,10 @@ module Rglpk
       end
       
       Glpk_wrapper.glp_load_matrix(@lp, v.size, ia, ja, ar)
+      
+      Glpk_wrapper.delete_intArray(ia)
+      Glpk_wrapper.delete_intArray(ja)
+      Glpk_wrapper.delete_doubleArray(ar)
     end
     
   private
@@ -179,6 +211,10 @@ module Rglpk
       Glpk_wrapper.glp_simplex(@lp, parm)
     end
     
+    def status
+      Glpk_wrapper.glp_get_status(@lp)
+    end
+    
     def mip(options = {})
       parm = Glpk_wrapper::Glp_iocp.new
       Glpk_wrapper.glp_init_iocp(parm)
@@ -189,10 +225,17 @@ module Rglpk
       apply_options_to_parm(options, parm)
       Glpk_wrapper.glp_intopt(@lp, parm)
     end
-
-    def status
-      Glpk_wrapper.glp_get_status(@lp)
+    
+    def mip_status
+      Glpk_wrapper.glp_mip_status(@lp)
     end
+    
+    
+    def write_lp(filename)
+      Glpk_wrapper.glp_write_lp(@lp, nil, filename)
+    end
+    
+    
   end
         
   class Row
@@ -210,7 +253,7 @@ module Rglpk
     def name
       Glpk_wrapper.glp_get_row_name(@p.lp, @i)
     end
-    
+        
     def set_bounds(type, lb, ub)
       raise ArgumentError unless TypeConstants.include?(type)
       lb = 0.0 if lb.nil?
@@ -229,16 +272,24 @@ module Rglpk
       [t, lb, ub]
     end
     
-    def set(v)
-      raise RuntimeError unless v.size == @p.cols.size
+    def set(v, i = nil)
+      raise RuntimeError unless v.size == @p.cols.size or (not i.nil? and i.size == v.size)
       ind = Glpk_wrapper.new_intArray(v.size + 1)
       val = Glpk_wrapper.new_doubleArray(v.size + 1)
       
-      1.upto(v.size){|x| Glpk_wrapper.intArray_setitem(ind, x, x)}
+      if i.nil?
+        i = 1.upto(v.size)
+      end
+
+      i.each_with_index{|x, y|
+        Glpk_wrapper.intArray_setitem(ind, y + 1, x)}
       v.each_with_index{|x, y|
         Glpk_wrapper.doubleArray_setitem(val, y + 1, x)}
-      
+
       Glpk_wrapper.glp_set_mat_row(@p.lp, @i, v.size, ind, val)
+
+      Glpk_wrapper.delete_intArray(ind)
+      Glpk_wrapper.delete_doubleArray(val)
     end
     
     def get
@@ -251,7 +302,25 @@ module Rglpk
         j = Glpk_wrapper.intArray_getitem(ind, i + 1)
         row[j - 1] = v
       end
+      Glpk_wrapper.delete_intArray(ind)
+      Glpk_wrapper.delete_doubleArray(val)
       row
+    end
+    
+    def get_stat
+      Glpk_wrapper.glp_get_row_stat(@p.lp, @i)
+    end
+    
+    def get_prim
+      Glpk_wrapper.glp_get_row_prim(@p.lp, @i)
+    end
+
+    def mip_val
+      Glpk_wrapper.glp_mip_row_val(@p.lp, @i)
+    end
+
+    def get_dual
+      Glpk_wrapper.glp_get_row_dual(@p.lp, @i)
     end
   end
   
@@ -307,6 +376,9 @@ module Rglpk
         Glpk_wrapper.doubleArray_setitem(val, y + 1, x)}
       
       Glpk_wrapper.glp_set_mat_col(@p.lp, @j, v.size, ind, val)
+      
+      Glpk_wrapper.delete_intArray(ind)
+      Glpk_wrapper.delete_doubleArray(val)
     end
     
     def get
@@ -319,6 +391,8 @@ module Rglpk
         j = Glpk_wrapper.intArray_getitem(ind, i + 1)
         col[j - 1] = v
       end
+      Glpk_wrapper.delete_intArray(ind)
+      Glpk_wrapper.delete_doubleArray(val)
       col
     end
     
