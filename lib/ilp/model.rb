@@ -1,5 +1,9 @@
+require "set"
+
 module Ilp
   class Model
+
+    INF = 1.0 / 0.0 # Useful for ranges
 
     attr_accessor :vars, :constraints, :objective
 
@@ -45,6 +49,12 @@ module Ilp
     def maximize(expression)
       @objective = Objective.new(expression, Objective::MAXIMIZE)
       self
+    end
+
+    def to_problem
+      p = Ilp::Problem.new
+      p.read(self)
+      p
     end
 
   private

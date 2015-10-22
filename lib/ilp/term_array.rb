@@ -1,4 +1,4 @@
-module Scheduling::Ilp
+module Ilp
   class TermArray
     include Enumerable
 
@@ -9,11 +9,11 @@ module Scheduling::Ilp
     end
 
     def +(vars)
-      if vars.is_a? Scheduling::Ilp::Var
+      if vars.is_a? Ilp::Var
         @terms << Term.new(vars)
-      elsif vars.is_a? Scheduling::Ilp::Term
+      elsif vars.is_a? Ilp::Term
         @terms << vars
-      elsif vars.is_a? Scheduling::Ilp::TermArray
+      elsif vars.is_a? Ilp::TermArray
         @terms += vars.terms
       else
         raise ArgumentError, "Argument is not allowed: #{vars} of type #{vars.class}"

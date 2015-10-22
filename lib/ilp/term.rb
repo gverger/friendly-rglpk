@@ -1,4 +1,4 @@
-module Scheduling::Ilp
+module Ilp
   class Term
 
     attr_accessor :mult, :var

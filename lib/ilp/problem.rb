@@ -69,24 +69,39 @@ module Ilp
       end
     end
 
-    def mip(time_limit: nil)
-      params = {
-        presolve: Rglpk::GLP_ON,
-      }
-      params[:tm_lim] = time_limit unless time_limit.nil?
+    def mip(params = {})
+      @sol_type = :mip
+      params[:presolve] = Rglpk::GLP_ON
+
       problem.mip(params)
     end
 
+    def simplex(params = {})
+      @sol_type = :simplex
+      problem.simplex(params)
+    end
+
+
     def value_of(var)
       if var.is_a? String
-        problem.cols[var].mip_val
+        col = problem.cols[var]
       else
-      problem.cols[@column_idx[var]].mip_val
+        col = problem.cols[@column_idx[var]]
+      end
+      if @sol_type == :mip
+        col.mip_val
+      else
+        col.get_prim
       end
     end
 
     def obj_value
+      if @sol_type == :mip
       Glpk_wrapper.glp_mip_obj_val(problem.lp)
+      else
+        Glpk_wrapper.glp_get_obj_val(problem.lp)
+      end
+
     end
 
     def write_to_file(filename)
