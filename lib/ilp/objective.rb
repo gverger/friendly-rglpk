@@ -1,4 +1,4 @@
-module Scheduling::Ilp
+module Ilp
   class Objective
 
     MINIMIZE = Rglpk::GLP_MIN

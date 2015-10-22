@@ -1,6 +1,4 @@
-require 'rglpk'
-
-module Scheduling::Ilp
+module Ilp
   class Problem
 
     attr_accessor :problem

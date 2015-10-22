@@ -1,4 +1,4 @@
-module Scheduling::Ilp
+module Ilp
   class Model
 
     attr_accessor :vars, :constraints, :objective

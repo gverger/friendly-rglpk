@@ -1,4 +1,4 @@
-module Scheduling::Ilp
+module Ilp
   class Constraint
 
     LESS_OR_EQ = Rglpk::GLP_UP
