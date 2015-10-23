@@ -1,6 +1,6 @@
 require_relative 'helper'
 $LOAD_PATH << "./lib/ilp"
-%w(constant constraint model objective problem term term_array var).each(&method(:require))
+%w(constant constraint objective term term_array var).each(&method(:require))
 
 class TestIlp < Minitest::Test
 
@@ -19,8 +19,8 @@ class TestIlp < Minitest::Test
     # where all variables are non-negative
     #   x1 >= 0, x2 >= 0, x3 >= 0
     #
-    m = Ilp::Model.new
-    x1, x2, x3 = m.int_var_array(3, 0..Ilp::Model::INF)
+    m = Rglpk::Model.new
+    x1, x2, x3 = m.int_var_array(3, 0..Rglpk::INF)
     m.maximize(10 * x1 + 6 * x2 + 4 * x3)
 
     m.enforce(x1 + x2 + x3 <= 100)
@@ -37,7 +37,7 @@ class TestIlp < Minitest::Test
   end
 
   def test_send_more_money
-    model = Ilp::Model.new
+    model = Rglpk::Model.new
     var_names = [ 'S', 'E', 'N', 'D', 'M', 'O', 'R', 'Y' ]
     vars = model.int_var_array(8, 0..9, names: var_names)
     s,e,n,d,m,o,r,y = vars
@@ -64,16 +64,15 @@ class TestIlp < Minitest::Test
     m.lower_bound = 1
     model.enforce( number(s,e,n,d) + number(m,o,r,e) - number(m,o,n,e,y) == 0)
 
-    problem = Ilp::Problem.new
-    problem.read(model)
-    problem.mip
+    problem = model.to_problem 
+    problem.mip(presolve: Rglpk::GLP_ON)
 
     assert_equal [o,m,y,e,n,d,r,s].map{ |var| problem.value_of(var) }, [0, 1, 2, 5, 6, 7, 8, 9]
   end
 
 
   def test_send_most_money
-    model = Ilp::Model.new
+    model = Rglpk::Model.new
 
     var_names = [ 'S', 'E', 'N', 'D', 'M', 'O', 'T', 'Y' ]
     vars = model.int_var_array(8, 0..9, names: var_names)
@@ -103,9 +102,8 @@ class TestIlp < Minitest::Test
 
     model.maximize(number(m,o,n,e,y))
 
-    problem = Ilp::Problem.new
-    problem.read(model)
-    problem.mip
+    problem = model.to_problem
+    problem.mip(presolve: Rglpk::GLP_ON)
     assert_equal problem.obj_value, 10876
   end
 

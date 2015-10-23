@@ -1,9 +1,11 @@
 require "set"
 
-module Ilp
+module Rglpk
+
+  INF = 1.0 / 0.0 # Useful for ranges
+
   class Model
 
-    INF = 1.0 / 0.0 # Useful for ranges
 
     attr_accessor :vars, :constraints, :objective
 
@@ -14,27 +16,27 @@ module Ilp
     end
 
     def int_var(range = nil, name: nil)
-      var(Var::INTEGER_KIND, range, name)
+      var(Ilp::Var::INTEGER_KIND, range, name)
     end
 
     def int_var_array(length, range = nil, names: nil)
-      array_var(length, Var::INTEGER_KIND, range, names)
+      array_var(length, Ilp::Var::INTEGER_KIND, range, names)
     end
 
     def bin_var(name: nil)
-      var(Var::BINARY_KIND, nil, name)
+      var(Ilp::Var::BINARY_KIND, nil, name)
     end
 
     def bin_var_array(length, names: nil)
-      array_var(length, Var::BINARY_KIND, range, names)
+      array_var(length, Ilp::Var::BINARY_KIND, range, names)
     end
 
     def cont_var(range = nil)
-      var(Var::CONTINUOUS_KIND, range, name)
+      var(Ilp::Var::CONTINUOUS_KIND, range, name)
     end
 
     def cont_var_array(length, range = nil)
-      array_var(length, Var::CONTINUOUS_KIND, range, names)
+      array_var(length, Ilp::Var::CONTINUOUS_KIND, range, names)
     end
 
     def enforce(constraint)
@@ -42,19 +44,17 @@ module Ilp
     end
 
     def minimize(expression)
-      @objective = Objective.new(expression, Objective::MINIMIZE)
+      @objective = Ilp::Objective.new(expression, Ilp::Objective::MINIMIZE)
       self
     end
 
     def maximize(expression)
-      @objective = Objective.new(expression, Objective::MAXIMIZE)
+      @objective = Ilp::Objective.new(expression, Ilp::Objective::MAXIMIZE)
       self
     end
 
     def to_problem
-      p = Ilp::Problem.new
-      p.read(self)
-      p
+      Rglpk::Problem.new(self)
     end
 
   private
@@ -66,11 +66,11 @@ module Ilp
 
     def var(kind, range, name)
       if range.nil?
-        v = Var.new(kind: kind, name: name)
+        v = Ilp::Var.new(kind: kind, name: name)
         @vars << v
         return v
       end
-      v = Var.new(kind: kind, name: name, lower_bound: range.min, upper_bound: range.max)
+      v = Ilp::Var.new(kind: kind, name: name, lower_bound: range.min, upper_bound: range.max)
       @vars << v
       v
     end

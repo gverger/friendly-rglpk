@@ -10,7 +10,7 @@ class TestMemoryLeaks < Minitest::Test
       end
       
       change = change_to_real_memory_in_kb
-      assert (change < 10000), "memory leak #{change}kb"
+      assert (change < 20000), "memory leak #{change}kb"
     end
   end
   
