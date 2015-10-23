@@ -1,4 +1,5 @@
 require 'glpk_wrapper'
+require 'model'
 
 module Rglpk
   Glpk_wrapper.constants.each do |c|
