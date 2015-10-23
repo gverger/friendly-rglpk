@@ -10,7 +10,7 @@ module Ilp
 
     def +(vars)
       if vars.is_a? Ilp::Var
-        @terms << Term.new(vars)
+        @terms << Ilp::Term.new(vars)
       elsif vars.is_a? Ilp::Term
         @terms << vars
       elsif vars.is_a? Ilp::TermArray
@@ -32,19 +32,19 @@ module Ilp
     end
 
     def <=(value)
-      Constraint.new(self, Constraint::LESS_OR_EQ, value)
+      Ilp::Constraint.new(self, Ilp::Constraint::LESS_OR_EQ, value)
     end
 
     def >=(value)
-      Constraint.new(self, Constraint::GREATER_OR_EQ, value)
+      Ilp::Constraint.new(self, Ilp::Constraint::GREATER_OR_EQ, value)
     end
 
     def ==(value)
-      Constraint.new(self, Constraint::EQUALS, value)
+      Ilp::Constraint.new(self, Ilp::Constraint::EQUALS, value)
     end
 
     def coerce(value)
-      [Constant.new(value), self]
+      [Ilp::Constant.new(value), self]
     end
 
     def each(&block)

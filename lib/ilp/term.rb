@@ -9,20 +9,20 @@ module Ilp
     end
 
     def +(vars)
-      TermArray.new(self) + vars
+      Ilp::TermArray.new(self) + vars
     end
 
     def -(vars)
-      TermArray.new(self) - vars
+      Ilp::TermArray.new(self) - vars
     end
 
     def *(mult)
       raise ArgumentError, 'Argument is not numeric' unless mult.is_a? Numeric
-      Term.new(@var, @mult * mult)
+      Ilp::Term.new(@var, @mult * mult)
     end
 
     def coerce(num)
-      [Constant.new(num), self]
+      [Ilp::Constant.new(num), self]
     end
 
     def to_s

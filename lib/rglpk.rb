@@ -1,5 +1,4 @@
 require 'glpk_wrapper'
-require 'model'
 
 module Rglpk
   Glpk_wrapper.constants.each do |c|
@@ -546,3 +545,5 @@ module Rglpk
     end
   end
 end
+require 'model'
+%w(constant constraint objective term term_array var).map{|name| "ilp/#{name}" }.each(&method(:require))

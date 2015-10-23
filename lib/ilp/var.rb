@@ -24,23 +24,23 @@ module Ilp
     end
 
     def +(vars)
-      Term.new(self) + vars
+      Ilp::Term.new(self) + vars
     end
 
     def -(vars)
-      Term.new(self) - vars
+      Ilp::Term.new(self) - vars
     end
 
     def -@
-      Term.new(self, -1)
+      Ilp::Term.new(self, -1)
     end
 
     def *(mult)
-      Term.new(self) * mult
+      Ilp::Term.new(self) * mult
     end
 
     def coerce(num)
-      [Constant.new(num), self]
+      [Ilp::Constant.new(num), self]
     end
 
   end
