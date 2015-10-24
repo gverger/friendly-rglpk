@@ -39,8 +39,20 @@ module Ilp
       Ilp::Term.new(self) * mult
     end
 
+    def ==(vars)
+      Ilp::Term.new(self) == vars
+    end
+
+    def <=(vars)
+      Ilp::Term.new(self) <= vars
+    end
+
+    def >=(vars)
+      Ilp::Term.new(self) >= vars
+    end
+
     def coerce(num)
-      [Ilp::Constant.new(num), self]
+      [Ilp::Term.new(self), num]
     end
 
   end

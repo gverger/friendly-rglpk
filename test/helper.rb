@@ -1,9 +1,8 @@
 here = File.expand_path(File.dirname(__FILE__))
 
 require 'minitest/autorun'
-$LOAD_PATH << './ext'
+$LOAD_PATH << './ext' << './lib'
 require here+'/../lib/rglpk'
-require here+'/../lib/model'
 
 module Examples
   def brief_example

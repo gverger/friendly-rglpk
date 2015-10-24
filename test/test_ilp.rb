@@ -1,6 +1,4 @@
 require_relative 'helper'
-$LOAD_PATH << "./lib/ilp"
-%w(constant constraint objective term term_array var).each(&method(:require))
 
 class TestIlp < Minitest::Test
 

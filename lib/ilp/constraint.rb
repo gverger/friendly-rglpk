@@ -8,9 +8,10 @@ module Ilp
     attr_accessor :terms, :type, :bound
 
     def initialize(terms, type, bound)
-      @terms = terms
+      @terms = terms - bound
+      @terms.normalize!
+      @bound = -1 * @terms.send(:pop_constant)
       @type = type
-      @bound = bound
     end
 
     def to_s
