@@ -31,11 +31,11 @@ module Rglpk
       array_var(length, Ilp::Var::BINARY_KIND, range, names)
     end
 
-    def cont_var(range = nil)
+    def cont_var(range = nil, name: nil)
       var(Ilp::Var::CONTINUOUS_KIND, range, name)
     end
 
-    def cont_var_array(length, range = nil)
+    def cont_var_array(length, range = nil, name: nil)
       array_var(length, Ilp::Var::CONTINUOUS_KIND, range, names)
     end
 
