@@ -217,6 +217,10 @@ module Rglpk
       Glpk_wrapper.glp_get_status(@lp)
     end
 
+    def solve(options = {})
+      mip(options)
+    end
+
     def mip(options = {})
       @sol_type = :mip
       parm = Glpk_wrapper::Glp_iocp.new
@@ -236,6 +240,14 @@ module Rglpk
 
     def write_lp(filename)
       Glpk_wrapper.glp_write_lp(@lp, nil, filename)
+    end
+
+    def proven_infeasible?
+      mip_status == Rglpk::GLP_INFEAS
+    end
+
+    def proven_optimal?
+      mip_status == Rglpk::GLP_OPT
     end
 
   private

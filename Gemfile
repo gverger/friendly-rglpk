@@ -4,4 +4,5 @@ group :development do
   gem 'jeweler'
   gem 'minitest'
   gem 'rake'
+  gem 'memory_profiler'
 end
