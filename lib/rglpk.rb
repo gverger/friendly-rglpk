@@ -71,6 +71,10 @@ module Rglpk
 
       ObjectSpace.define_finalizer(self, self.class.finalizer(@lp))
       read model unless model.nil?
+
+      @default_solve_params = {
+        presolve: Rglpk::GLP_ON,
+      }
     end
 
     def self.finalizer(lp)
@@ -223,6 +227,8 @@ module Rglpk
 
     def mip(options = {})
       @sol_type = :mip
+
+      options = @default_solve_params.merge(options)
       parm = Glpk_wrapper::Glp_iocp.new
       Glpk_wrapper.glp_init_iocp(parm)
 
@@ -248,6 +254,10 @@ module Rglpk
 
     def proven_optimal?
       mip_status == Rglpk::GLP_OPT
+    end
+
+    def set_time_limit(seconds)
+      @default_solve_params[:tm_lim] = seconds * 1000
     end
 
   private
