@@ -339,7 +339,7 @@ module Rglpk
       end
     end
 
-    def obj_value
+    def objective_value
       if @sol_type == :mip
         Glpk_wrapper.glp_mip_obj_val(@lp)
       else
